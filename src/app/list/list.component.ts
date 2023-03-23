@@ -36,10 +36,8 @@ export class ListComponent implements OnInit {
 
   fetchPaginatedProductsList(page) {
 
-    this.coolStoreService.fetchPaginatedProductsList(page) 
+    this.coolStoreService.fetchPaginatedProductsList(page)
       .subscribe(products => (this.products = products));
-
-
   }
 
 
@@ -47,7 +45,6 @@ export class ListComponent implements OnInit {
     if(this.page != event) {
       this.page = event;
       this.fetchPaginatedProductsList(event);
-      console.log("this.products", this.products)
     }
   }
 
