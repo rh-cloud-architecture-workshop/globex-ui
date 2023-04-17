@@ -16,6 +16,9 @@ import { get } from 'env-var';
 import { v4 as uuidv4 } from 'uuid';
 import { LogLevel } from 'angular-auth-oidc-client';
 
+import { Server  as socketServer} from "socket.io";
+import { createServer } from "http";
+import { ChatMessageDto } from 'src/app/models/chatMessageDto';
 
 
 // The Express app is exported so that it can be used by serverless Functions.
@@ -360,11 +363,34 @@ function run(): void {
   const port = process.env['PORT'] || 4200;
   // Start up the Node server
   const server = app();
-  server.listen(port, () => {
+  
+  const httpServer = server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
+  
+  
+const io = require('socket.io')(httpServer, {
+  cors: {origin : '*'}
+});
 
 
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+
+  socket.on('message', (message) => {
+    
+    let chatDto =  JSON.parse(JSON.parse(message));
+    io.emit('message', `${chatDto.user} said ${chatDto.message}`);
+    io.emit('message', `Thanks for your message`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('a user disconnected!');
+  });
+});
+
+  
   ['log', 'warn', 'error'].forEach((methodName) => {
     const originalMethod = console[methodName];
     console[methodName] = (...args) => {

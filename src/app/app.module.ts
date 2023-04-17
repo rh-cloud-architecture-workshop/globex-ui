@@ -32,6 +32,9 @@ import { OrderService } from './order.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthConfigModule } from './auth-config.module';
 import { filter } from 'rxjs';
+import { ChatComponent } from './chat/chat.component';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { ChatService } from './chat.service';
 
 
 export function initConfig(appConfig: AppConfigService) {
@@ -39,6 +42,7 @@ export function initConfig(appConfig: AppConfigService) {
 }
 
 
+const config: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
 @NgModule({
   declarations: [
@@ -52,21 +56,23 @@ export function initConfig(appConfig: AppConfigService) {
     ProductRecommendationComponent,
     HomeComponent,
     YourFavouritesComponent,
-    CheckoutComponent
+    CheckoutComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     FormsModule, ReactiveFormsModule,
     AppRoutingModule, AuthConfigModule,
     HttpClientModule,
-    NgbModule
+    NgbModule, SocketIoModule.forRoot(config)
+
   ],
   providers: [
     {
       provide: APP_INITIALIZER, useFactory: initConfig,  deps: [AppConfigService],  multi: true
     },
     CoolStoreProductsService, LogService, CookieService, HttpErrorHandler, MessageService, 
-    CoolstoreCookiesService, CartService, LoginService, CustomerService, OrderService, OidcSecurityService
+    CoolstoreCookiesService, CartService, LoginService, CustomerService, OrderService, OidcSecurityService, ChatService
   ],
   bootstrap: [AppComponent]
 })
