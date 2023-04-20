@@ -13,7 +13,6 @@ export class CoolStoreProductsService {
 
   paginatedProductsListUrl = serverEnvConfig.ANGULR_API_GETPAGINATEDPRODUCTS;  // URL to web api
   paginationLimit = serverEnvConfig.ANGULR_API_GETPAGINATEDPRODUCTS_LIMIT; //number of products per page
-  recommendedProductsListUrl = serverEnvConfig.ANGULR_API_GETRECOMMENDEDPRODUCTS;  // URL to web api
   getProductDetailsByIdsUrl = serverEnvConfig.ANGULR_API_GETPRODUCTDETAILS_FOR_IDS;  // URL to web api
 
   private handleError: HandleError;
@@ -40,14 +39,6 @@ export class CoolStoreProductsService {
     return this.http.get<any>(this.paginatedProductsListUrl+"?page="+page + "&limit="+this.paginationLimit )
       .pipe(
         catchError(this.handleError('fetchPaginatedProductsList', ''))
-      );
-  }
-
-  /** getRecommendedProducts  from the server */
-  getRecommendedProducts(): Observable<any[]> {
-    return this.http.get<any[]>(this.recommendedProductsListUrl)
-      .pipe(
-        catchError(this.handleError('[[CoolStoreProductsService]-[getRecommendedProducts]', []))
       );
   }
 

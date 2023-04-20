@@ -17,7 +17,6 @@ import { LogService } from './log.service';
 import { CartComponent } from './cart/cart.component';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
 import { CookieService } from 'ngx-cookie-service';
-import { ProductRecommendationComponent } from './product-recommendation/product-recommendation.component';
 import { HttpErrorHandler } from './http-error-handler.service';
 import { MessageService } from './message.service';
 import { HomeComponent } from './home/home.component';
@@ -49,7 +48,6 @@ export function initConfig(appConfig: AppConfigService) {
     CartComponent,
     HeaderComponent,
     ProductDetailComponent,
-    ProductRecommendationComponent,
     HomeComponent,
     YourFavouritesComponent,
     CheckoutComponent

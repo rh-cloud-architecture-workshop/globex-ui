@@ -31,7 +31,6 @@ export function app(): express.Express {
   //client UI to SSR calls
   const ANGULR_API_GETPAGINATEDPRODUCTS =  '/api/getPaginatedProducts';
   const ANGULR_API_GETPAGINATEDPRODUCTS_LIMIT = 8;
-  const ANGULR_API_GETRECOMMENDEDPRODUCTS =  '/api/getRecommendedProducts';
   const ANGULR_API_TRACKUSERACTIVITY = '/api/trackUserActivity';
   const ANGULR_API_GETPRODUCTDETAILS_FOR_IDS = '/api/getProductDetailsForIds';
   const ANGULR_HEALTH = '/health';
@@ -55,7 +54,6 @@ export function app(): express.Express {
   const API_TRACK_USERACTIVITY = get('API_TRACK_USERACTIVITY').default('http://d8523dbb-977d-4d5c-be98-aef3da676192.mock.pstmn.io/track').asString();
   const API_GET_PAGINATED_PRODUCTS = get('API_GET_PAGINATED_PRODUCTS').default('http://3ea8ea3c-2bc9-45ae-9dc9-73aad7d8eafb.mock.pstmn.io/services/products').asString();
   const API_GET_PRODUCT_DETAILS_BY_IDS = get('API_GET_PRODUCT_DETAILS_BY_IDS').default('http://3ea8ea3c-2bc9-45ae-9dc9-73aad7d8eafb.mock.pstmn.io/services/product/list/').asString();
-  const API_CATALOG_RECOMMENDED_PRODUCT_IDS = get('API_CATALOG_RECOMMENDED_PRODUCT_IDS').default('http://e327d0a8-a4cc-4e60-8707-51a295f04f76.mock.pstmn.io/score/product').asString();
   const API_CART_SERVICE = get('API_CART_SERVICE').default('').asString();
   const API_CUSTOMER_SERVICE = get('API_CUSTOMER_SERVICE').default('').asString();
   const API_ORDER_SERVICE = get('API_ORDER_SERVICE').asString();
@@ -133,37 +131,6 @@ export function app(): express.Express {
       .catch(error => {
         console.log("ANGULR_API_GETPAGINATEDPRODUCTS", error);
       });
-  });
-
-
-  // Get Product Details for the comma separated Product IDs string
-  server.get(ANGULR_API_GETRECOMMENDEDPRODUCTS, (req, res) => {
-    var commaSeparatedProdIds;
-    var recommendedProducts= [];
-    var getRecommendedProducIdsURL = API_CATALOG_RECOMMENDED_PRODUCT_IDS;
-    var getProdDetailsByIdURL = API_GET_PRODUCT_DETAILS_BY_IDS;
-    var getRecommendedProducts;
-    axios
-      .get(getRecommendedProducIdsURL)
-      .then(response => {
-        getRecommendedProducts = response.data;
-
-        //get a list of Product Ids from the array sent
-        var prodArray = getRecommendedProducts.map(s=>s.productId);
-
-        commaSeparatedProdIds = prodArray.toString();
-        if (!commaSeparatedProdIds) {
-          return {};
-        }
-
-        return axios.get(getProdDetailsByIdURL.replace(':ids', commaSeparatedProdIds));
-      })
-      .then(response => {
-        var prodDetailsArray = response.data;
-        var returnData = getRecommendedProducts.map(t1 => ({...t1, ...prodDetailsArray.find(t2 => t2.itemId === t1.productId)}));
-        returnData = returnData.slice(0,RECOMMENDED_PRODUCTS_LIMIT);
-        res.send(returnData);
-      }).catch(error => { console.log("ANGULR_API_GETRECOMMENDEDPRODUCTS", error); });
   });
 
 
