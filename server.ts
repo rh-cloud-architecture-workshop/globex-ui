@@ -31,7 +31,6 @@ export function app(): express.Express {
   //client UI to SSR calls
   const ANGULR_API_GETPAGINATEDPRODUCTS =  '/api/getPaginatedProducts';
   const ANGULR_API_GETPAGINATEDPRODUCTS_LIMIT = 8;
-  const ANGULR_API_TRACKUSERACTIVITY = '/api/trackUserActivity';
   const ANGULR_API_GETPRODUCTDETAILS_FOR_IDS = '/api/getProductDetailsForIds';
   const ANGULR_HEALTH = '/health';
   const ANGULR_API_CART = '/api/cart';
@@ -51,7 +50,6 @@ export function app(): express.Express {
 
   // external micro services typically running on OpenShift
   const API_MANAGEMENT_FLAG = get('API_MANAGEMENT_FLAG').default("NO").asString();
-  const API_TRACK_USERACTIVITY = get('API_TRACK_USERACTIVITY').default('http://d8523dbb-977d-4d5c-be98-aef3da676192.mock.pstmn.io/track').asString();
   const API_GET_PAGINATED_PRODUCTS = get('API_GET_PAGINATED_PRODUCTS').default('http://3ea8ea3c-2bc9-45ae-9dc9-73aad7d8eafb.mock.pstmn.io/services/products').asString();
   const API_GET_PRODUCT_DETAILS_BY_IDS = get('API_GET_PRODUCT_DETAILS_BY_IDS').default('http://3ea8ea3c-2bc9-45ae-9dc9-73aad7d8eafb.mock.pstmn.io/services/product/list/').asString();
   const API_CART_SERVICE = get('API_CART_SERVICE').default('').asString();
@@ -148,27 +146,6 @@ export function app(): express.Express {
         res.send(response.data);
       })
       .catch(error => { console.log("ANGULR_API_GETPRODUCTDETAILS_FOR_IDS", error); });
-  });
-
-  // Save user activity
-  server.post(ANGULR_API_TRACKUSERACTIVITY, (req, res) => {
-    var url = API_TRACK_USERACTIVITY;
-    axios
-      .post(url, req.body)
-      .then(response => {
-        res.send(response.data);
-      })
-      .catch(
-        (reason: AxiosError<{additionalInfo:string}>) => {
-          if (reason.response!.status === 400) {
-            // Handle 400
-            res.send("error:reason.response!.status " + reason.response!.status);
-          } else {
-            res.send("error:reason.response!.status " + reason.response!.status);
-          }
-          console.log("ANGULR_API_TRACKUSERACTIVITY AxiosError", reason.message)
-        }
-      );
   });
 
   // Get CART API call

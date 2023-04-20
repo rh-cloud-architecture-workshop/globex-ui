@@ -75,36 +75,6 @@ export class CoolstoreCookiesService {
     likedProductsList.push(product.itemId)
     likedProductsList= likedProductsList.filter((item, i, ar) => ar.indexOf(item) === i);
     this.cookieService.set('productLikes', likedProductsList.toString());
-
-
-    this.userActivityObj = new UserActivityModel(
-                              GlobexConstants.General.SITE_ID,
-                              new Activity(
-                                this.userDetailsMap["userId"],
-                                this.route.snapshot.url.toString(),
-                                uuidv4(),
-                                GlobexConstants.General.USER_ACTIVITY_LIKE
-                                ) ,
-                              new UserInfo(
-                                this.userDetailsMap["visitsCount"], //visitsCount
-                                new Date().getTime(), //prevVisitTs
-                                new Date().getTime(), //firstVisitTs
-                                GlobexConstants.General.CAMPAIGN,
-                                this.userDetailsMap["newVisit"],  //0 for NO, 1 for YES
-                                this.dateToFormattedString() //localTime
-                              ),
-                              new ActionInfo(product.itemId, '', '')
-                              )
-
-        this.saveUserActivityPost().subscribe(response => {});
-
-  }
-
-
-  saveUserActivityPostUrl = serverEnvConfig.ANGULR_API_TRACKUSERACTIVITY;  // URL to web api
-  saveUserActivityPost(): Observable<UserActivityModel> {
-    return this.http.post<UserActivityModel>(this.saveUserActivityPostUrl, this.userActivityObj)
-      .pipe(catchError(this.handleError('userActivityObj', this.userActivityObj)));
   }
 
 
