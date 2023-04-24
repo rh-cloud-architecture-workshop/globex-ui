@@ -19,7 +19,7 @@ export SSO_AUTHORITY="http://localhost:8180/realms/user1-globex_users"
 export SSO_REDIRECT_LOGOUT_URI="http://localhost:4200/home"
 export SSO_LOG_LEVEL=2
 
-
+GLOBEX_SUPPORT_URL
 
 ## docker
 docker built -t quay.io/cloud-architecture-workshop/globex-web-chat:<checkin-tag> .

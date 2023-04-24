@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ChatService } from '../chat.service';
 import { ChatMessageDto } from '../models/chatMessageDto';
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-chat',
@@ -12,8 +13,13 @@ export class ChatComponent {
   
 
   newMessage: string;
-  messageList: string[] = [];
-  constructor(public chatService: ChatService) { }
+  messageList: any[] = [];
+  sessionid :string;
+
+  constructor(public chatService: ChatService) { 
+    this.sessionid =  uuid.v4();    
+    console.log("this.sessionid", this.sessionid)
+  }
 
   ngOnInit(){
     
@@ -21,8 +27,12 @@ export class ChatComponent {
   socketConnected = false;
   
   initChat(){
-    this.chatService.getMessage().subscribe((message: string) => {
-      this.messageList.push(message);
+    this.chatService.getMessage(this.sessionid).subscribe((message: any) => {
+      console.log("chatService.getMessage");
+      console.log(message);
+      if(message!=null && message!='') {
+        this.messageList.push(message);
+      }
     })
     this.socketConnected = true;
   }
@@ -34,7 +44,7 @@ export class ChatComponent {
     if(sendForm.value.message && sendForm.value.message!=null) {
       const chatMessageDto = new ChatMessageDto(sendForm.value.user, sendForm.value.message);
       sendForm.controls.message.reset();
-      this.chatService.sendMessage(JSON.stringify(chatMessageDto));
+      this.chatService.sendMessage(chatMessageDto, this.sessionid);
       this.newMessage = '';
     }
   }

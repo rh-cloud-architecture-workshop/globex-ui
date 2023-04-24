@@ -13,12 +13,7 @@ import { AxiosError } from 'axios';
 
 import { get } from 'env-var';
 
-import { v4 as uuidv4 } from 'uuid';
 import { LogLevel } from 'angular-auth-oidc-client';
-
-import { Server  as socketServer} from "socket.io";
-import { createServer } from "http";
-import { ChatMessageDto } from 'src/app/models/chatMessageDto';
 
 
 // The Express app is exported so that it can be used by serverless Functions.
@@ -313,6 +308,7 @@ export function app(): express.Express {
       })
   });
 
+  
 //API Setup END
 
 //Health check
@@ -363,32 +359,78 @@ function run(): void {
   const port = process.env['PORT'] || 4200;
   // Start up the Node server
   const server = app();
-  
+
   const httpServer = server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
+
+  const ANGULR_CHAT_CALLBACK = '/api/chatCallBack';
+  const GLOBEX_SUPPORT_URL = get('GLOBEX_SUPPORT_URL').asString();;
+ 
+ 
+
   
-  
-const io = require('socket.io')(httpServer, {
-  cors: {origin : '*'}
-});
+  const io = require('socket.io')(httpServer, {
+    cors: { origin: '*' }
+  });
 
+  const axios = require('axios');
 
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
-
-  socket.on('message', (message) => {
+  server.post(ANGULR_CHAT_CALLBACK, (req, res) => {
+    console.log('ANGULR_CHAT_CALLBACK sendMessage: ', req.body)
+    let message = req.body;
     
-    let chatDto =  JSON.parse(JSON.parse(message));
-    io.emit('message', `${chatDto.user} said ${chatDto.message}`);
-    io.emit('message', `Thanks for your message`);
+  
+    io.sockets.in(message.sessionid).emit('message',  { "user":message.agent + " (Agent@Globex)", "text":message.text, "sessionid": message.sessionid});
+    res.status(200).send();
+  
   });
 
-  socket.on('disconnect', () => {
-    console.log('a user disconnected!');
+  io.on('connection', (socket) => {
+    console.log('a user connected');
+
+    
+    socket.on('switchRoom', function(newroom){
+      
+      socket.join(newroom);      
+    });
+
+    socket.on('message', (message) => { 
+      let chatDto = message;
+      console.log('message', `${chatDto.user} with sessionId ${chatDto.sessionid}: ${chatDto.text}`);
+
+
+      axios
+      .post(GLOBEX_SUPPORT_URL, message)
+      .then(response => {
+          let supportMessage = response.data;
+          console.log("supportMessage", supportMessage)
+      })
+      .catch(
+        (reason: AxiosError<{additionalInfo:string}>) => {
+          if (reason.response!.status === 400) {
+            // Handle 400
+            console.log("error:reason.response!.status " + reason.response!.status);
+          } else {
+            console.log("error:reason.response!.status " + reason.response!.status);
+          }
+          console.log("ANGULR_API_TRACKUSERACTIVITY AxiosError", reason.message)
+        }
+      );
+      io.sockets.in(chatDto.sessionid).emit ('message', message);
+      
+    });
+
+    
+    socket.on('agentresponse', (message) => {
+      console.log('socket.on agentresponse', message)      
+      io.sockets.in(message.sessionid).emit('message', message);
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('a user disconnected!');
+    });
   });
-});
 
   
   ['log', 'warn', 'error'].forEach((methodName) => {
