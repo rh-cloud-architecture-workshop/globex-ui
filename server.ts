@@ -374,13 +374,18 @@ function run(): void {
     cors: { origin: '*' }
   });
 
+  io.eio.pingTimeout = 120000; // 2 minutes
+  io.eio.pingInterval = 5000;  // 5 seconds
+
+  io.on('error', function(){
+    io.reconnect();
+  });
+
   const axios = require('axios');
 
   server.post(ANGULR_CHAT_CALLBACK, (req, res) => {
     console.log('ANGULR_CHAT_CALLBACK sendMessage: ', req.body)
     let message = req.body;
-    
-  
     io.sockets.in(message.sessionid).emit('message',  { "user":message.agent + " (Agent@Globex)", "text":message.text, "sessionid": message.sessionid});
     res.status(200).send();
   
@@ -388,16 +393,21 @@ function run(): void {
 
   io.on('connection', (socket) => {
     console.log('a user connected');
-
     
-    socket.on('switchRoom', function(newroom){
-      
+    socket.on('switchRoom', function(newroom){      
       socket.join(newroom);      
     });
 
     socket.on('message', (message) => { 
       let chatDto = message;
       console.log('message', `${chatDto.user} with sessionId ${chatDto.sessionid}: ${chatDto.text}`);
+
+      var room = io.sockets.adapter.rooms.get(chatDto.sessionid)
+      console.log("room for " + chatDto.sessionid + "  is " + room)
+      if(room === undefined) {
+        console.log(chatDto.sessionid + " doesnt exist. recreating")
+        socket.join(chatDto.sessionid);    
+      }
 
 
       axios
@@ -408,13 +418,8 @@ function run(): void {
       })
       .catch(
         (reason: AxiosError<{additionalInfo:string}>) => {
-          if (reason.response!.status === 400) {
-            // Handle 400
-            console.log("error:reason.response!.status " + reason.response!.status);
-          } else {
-            console.log("error:reason.response!.status " + reason.response!.status);
-          }
-          console.log("ANGULR_API_TRACKUSERACTIVITY AxiosError", reason.message)
+          console.log("error:reason.response!.status " + reason);          
+          console.log("GLOBEX_SUPPORT_URL AxiosError", reason.message)
         }
       );
       io.sockets.in(chatDto.sessionid).emit ('message', message);

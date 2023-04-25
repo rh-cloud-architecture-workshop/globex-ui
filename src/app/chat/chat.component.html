@@ -1,20 +1,24 @@
-<main class="card chat">
+<div class="card chat alert alert-danger"  *ngIf="!loginService.isUserAuthenticated()" style="margin-top: 30px;">
+    Please login to  chat with us.
+</div>
+  
+<main class="card chat" *ngIf="loginService.isUserAuthenticated()">
     <div class="container card-body">
+        <i class="chat-icon fa fas fa-comments"></i>
+        <span class="chat-title">Hello {{user}}! Welcome back. How can we help?</span>
+        
         <div class="chat-content">
-            <div class="card">
+            <div class="card"   #scrollMe style="overflow: scroll;">
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item" *ngFor="let chatMessage of this.messageList">
-                        <span>{{chatMessage.user}}: {{chatMessage.text}}</span>
+                        <span><strong>{{chatMessage.user}}:</strong> {{chatMessage.text}}</span>
                     </li>
                 </ul>
             </div>
         </div>
         <form (ngSubmit)="sendMessage(sendForm)" #sendForm="ngForm">
             <div class="chat-send row">
-                <div class="col-2">
-                    <input type="text" placeholder="Your name" class="form-control" name="user" id="input-user" ngModel>
-                </div>
-                <div class="col-8">
+                <div class="col-10">
                     <input type="text" placeholder="Type a message.." class="form-control" name="message" id="input-message" ngModel>
                 </div>
                 <div class="col-2">

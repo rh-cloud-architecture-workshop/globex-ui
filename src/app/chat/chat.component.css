@@ -9,3 +9,13 @@ div.chat-content {
 .card {
     height: 100%;
 }
+
+.chat-icon {
+    font-size: 80px; 
+    color: #129bf4;
+}
+
+.chat-title {
+    font-size: 20px;
+    color: black;
+}

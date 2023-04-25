@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { ChatMessageDto } from './models/chatMessageDto';
 import { BehaviorSubject } from 'rxjs';
 import { io } from "socket.io-client";
@@ -6,24 +6,37 @@ import { io } from "socket.io-client";
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
+export class ChatService implements OnInit{
   
   public message$: BehaviorSubject<string> = new BehaviorSubject('');
 
   
   chatMessages: ChatMessageDto[] = [];
-  socket = io();
+  socket = io({
+    'reconnection': true,
+    'reconnectionDelay': 500,
+    'reconnectionAttempts': 10
+  });
+  
   createRoom = true;
 
   
   constructor() { }
+  
+  ngOnInit(){
+    
+
+    this.socket.on('error', function(){
+      console.log("socket cant connect")
+      this.socket.socket.connect();
+    });
+  }
 
  
   public sendMessage(message: ChatMessageDto, sessionid: string) {
-    console.log('sendMessage: ', message)
     if(this.createRoom) {
       this.socket.emit('switchRoom', sessionid);
-      console.log("Room `$sessionid` created")
+      console.log("Room with " + sessionid + " created")
       this.createRoom = false;
     }
 

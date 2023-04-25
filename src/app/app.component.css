@@ -1,0 +1,65 @@
+#sy-whatshelp {
+    right: 25px;
+    bottom: 85px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  #sy-whatshelp a {
+    position: relative;
+  }
+  
+  #sy-whatshelp a.sywh-open-services {
+    background-color: #129bf4;
+    color: #fff;
+    line-height: 55px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 23px;
+    width: 55px;
+    height: 55px;
+    text-align: center;
+    box-shadow: 2px 2px 8px -3px #000;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    display: inline-block;
+  }
+  
+  #sy-whatshelp a.sywh-open-services i {
+    line-height: 55px;
+  }
+  
+  #sy-whatshelp a.sywh-open-services i.fa-times {
+    display: none;
+  }
+  
+  #sy-whatshelp .sywh-services {
+    width: 55px;
+    height: auto;
+  }
+  
+  #sy-whatshelp .sywh-services a {
+    display: none;
+  }
+  
+  #sy-whatshelp .sywh-services a i {
+    background-color: #129bf4;
+    color: #fff;
+    line-height: 55px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 23px;
+    width: 55px;
+    height: 55px;
+    text-align: center;
+    box-shadow: 2px 2px 8px -3px #000;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+  }
+  
