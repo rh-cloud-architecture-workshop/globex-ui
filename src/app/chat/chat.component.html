@@ -12,6 +12,8 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item" *ngFor="let chatMessage of this.messageList">
                         <span><strong>{{chatMessage.user}}:</strong> {{chatMessage.text}}</span>
+                        <br>
+                        <a href="{{chatMessage.pdf}}" target="_blank"  *ngIf="chatMessage.pdf && chatMessage.pdf!='' && chatMessage.pdf!=null">PDF Transcript</a>
                     </li>
                 </ul>
             </div>

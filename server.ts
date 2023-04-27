@@ -386,7 +386,19 @@ function run(): void {
   server.post(ANGULR_CHAT_CALLBACK, (req, res) => {
     console.log('ANGULR_CHAT_CALLBACK sendMessage: ', req.body)
     let message = req.body;
-    io.sockets.in(message.sessionid).emit('message',  { "user":message.agent + " (Agent@Globex)", "text":message.text, "sessionid": message.sessionid});
+    var room = io.sockets.adapter.rooms.get(message.sessionid)
+    console.log("room for " + message.sessionid + "  is " + room)
+    if(room === undefined) {
+      io.emit('switchRoom', message.sessionid);    
+      console.log("switched room to " + message.sessionid )
+    }
+    io.sockets.in(message.sessionid).emit('message',  
+                        { 
+                          "user":message.agent + " (Agent@Globex)", 
+                          "text":message.text, 
+                          "sessionid": message.sessionid,
+                          "pdf": message.pdf
+                        });
     res.status(200).send();
   
   });
