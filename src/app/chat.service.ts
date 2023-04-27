@@ -50,7 +50,7 @@ export class ChatService implements OnInit{
   }
 
   public getMessage = (sessionid) => {
-    this.socket.on("message", (message) =>{      
+    this.socket.on("agentresponse", (message) =>{      
       console.log("getMessage() message", message)
       this.message$.next(message);
       
@@ -60,7 +60,8 @@ export class ChatService implements OnInit{
   };
 
   
-  public closeWebSocket() {
+  public closeWebSocket(sessionId) {
+    this.socket.emit('deleteroom', sessionId);
     this.socket.close;
   }
 }

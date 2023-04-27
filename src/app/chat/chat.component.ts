@@ -62,13 +62,21 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       const chatMessageDto = new ChatMessageDto(this.user, sendForm.value.message);
       sendForm.controls.message.reset();
       this.chatService.sendMessage(chatMessageDto, this.sessionid);
+      if (chatMessageDto != null && chatMessageDto.message != '') {
+        let message = {
+          "user":chatMessageDto.getUser() + " (You)",
+          "text":chatMessageDto.getMessage(),
+          "sessionid": this.sessionid
+      }
+        this.messageList.push(message);
+      }
       this.newMessage = '';
     }
   }
 
 
   ngOnDestroy(): void {
-    this.chatService.closeWebSocket();
+    this.chatService.closeWebSocket(this.sessionid);
   }
 
 }

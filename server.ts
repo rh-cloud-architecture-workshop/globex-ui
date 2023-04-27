@@ -392,13 +392,14 @@ function run(): void {
       io.emit('switchRoom', message.sessionid);    
       console.log("switched room to " + message.sessionid )
     }
-    io.sockets.in(message.sessionid).emit('message',  
-                        { 
-                          "user":message.agent + " (Agent@Globex)", 
-                          "text":message.text, 
-                          "sessionid": message.sessionid,
-                          "pdf": message.pdf
-                        });
+    io.sockets.in(message.sessionid).emit('agentresponse',  
+            { 
+              "user":message.agent + " (Agent@Globex)", 
+              "text":message.text, 
+              "sessionid": message.sessionid,
+              "pdf": message.pdf
+            }
+    );
     res.status(200).send();
   
   });
@@ -406,9 +407,36 @@ function run(): void {
   io.on('connection', (socket) => {
     console.log('a user connected');
     
-    socket.on('switchRoom', function(newroom){      
-      socket.join(newroom);      
+    socket.on('switchRoom', function(newroom){     
+      var existingRoom = io.sockets.adapter.rooms.get(newroom) 
+      if(existingRoom === undefined) {
+        socket.join(newroom);      
+      } else {
+        console.log(newroom + " already exists. not creating a new room.")
+      }
+      
     });
+
+    socket.on('deleteroom', function(deleteRoom){     
+      console.log(deleteRoom + " room deleted")
+      socket.leave(deleteRoom);
+    });
+
+    socket.on('agentresponse', (message) => { 
+      let chatDto = message;
+      console.log("agent's response ", `${chatDto.user} with sessionId ${chatDto.sessionid}: ${chatDto.text}`);
+
+      var room = io.sockets.adapter.rooms.get(chatDto.sessionid)
+      console.log("room for " + chatDto.sessionid + "  is " + room)
+      if(room === undefined) {
+        console.log(chatDto.sessionid + " doesnt exist. recreating")
+        socket.join(chatDto.sessionid);    
+      }
+      io.sockets.in(chatDto.sessionid).emit ('agentresponse', message);
+      
+    });
+
+
 
     socket.on('message', (message) => { 
       let chatDto = message;
