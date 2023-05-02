@@ -35,6 +35,7 @@ import { filter } from 'rxjs';
 import { ChatComponent } from './chat/chat.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { ChatService } from './chat.service';
+import { DummyAuthPopUpService } from './dummy-auth-popup.service';
 
 
 export function initConfig(appConfig: AppConfigService) {
@@ -72,7 +73,7 @@ const config: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
       provide: APP_INITIALIZER, useFactory: initConfig,  deps: [AppConfigService],  multi: true
     },
     CoolStoreProductsService, LogService, CookieService, HttpErrorHandler, MessageService, 
-    CoolstoreCookiesService, CartService, LoginService, CustomerService, OrderService, OidcSecurityService, ChatService
+    CoolstoreCookiesService, CartService, LoginService, CustomerService, OrderService, OidcSecurityService, ChatService, DummyAuthPopUpService
   ],
   bootstrap: [AppComponent]
 })
