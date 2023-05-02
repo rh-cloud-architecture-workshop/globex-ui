@@ -32,6 +32,7 @@ import { OrderService } from './order.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthConfigModule } from './auth-config.module';
 import { filter } from 'rxjs';
+import { DummyAuthPopUpService } from './dummy-auth-popup.service';
 
 
 export function initConfig(appConfig: AppConfigService) {
@@ -66,7 +67,7 @@ export function initConfig(appConfig: AppConfigService) {
       provide: APP_INITIALIZER, useFactory: initConfig,  deps: [AppConfigService],  multi: true
     },
     CoolStoreProductsService, LogService, CookieService, HttpErrorHandler, MessageService, 
-    CoolstoreCookiesService, CartService, LoginService, CustomerService, OrderService, OidcSecurityService
+    CoolstoreCookiesService, CartService, LoginService, CustomerService, OrderService, OidcSecurityService, DummyAuthPopUpService
   ],
   bootstrap: [AppComponent]
 })
